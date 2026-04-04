@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: EkiEco waste exchange marketplace API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: users
+    description: User operations
+  - name: listings
+    description: Listing operations
+  - name: requests
+    description: Purchase request operations
 paths:
   /healthz:
     get:
@@ -24,6 +30,212 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /users/auth/request-code:
+    post:
+      operationId: requestAuthCode
+      tags: [users]
+      summary: Request SMS verification code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestCodeBody"
+      responses:
+        "200":
+          description: Code sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestCodeResponse"
+
+  /users/auth/verify-code:
+    post:
+      operationId: verifyAuthCode
+      tags: [users]
+      summary: Verify SMS code and login/register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyCodeBody"
+      responses:
+        "200":
+          description: Verified and logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid code
+
+  /users/me:
+    get:
+      operationId: getMe
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /listings:
+    get:
+      operationId: getListings
+      tags: [listings]
+      summary: Get all sale listings
+      parameters:
+        - name: wasteType
+          in: query
+          schema:
+            type: string
+        - name: isVip
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of sale listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+    post:
+      operationId: createListing
+      tags: [listings]
+      summary: Create a new sale listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListingBody"
+      responses:
+        "201":
+          description: Listing created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      summary: Get a single listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Listing detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "404":
+          description: Not found
+
+  /listings/{id}/reserve:
+    post:
+      operationId: reserveListing
+      tags: [listings]
+      summary: Reserve a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reserved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /purchase-requests:
+    get:
+      operationId: getPurchaseRequests
+      tags: [requests]
+      summary: Get all purchase requests
+      parameters:
+        - name: wasteType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of purchase requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PurchaseRequest"
+    post:
+      operationId: createPurchaseRequest
+      tags: [requests]
+      summary: Create a purchase request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePurchaseRequestBody"
+      responses:
+        "201":
+          description: Purchase request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+
+  /purchase-requests/{id}/respond:
+    post:
+      operationId: respondToPurchaseRequest
+      tags: [requests]
+      summary: Respond to a purchase request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Responded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+
+  /stats/summary:
+    get:
+      operationId: getStatsSummary
+      tags: [listings]
+      summary: Get marketplace statistics summary
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +246,220 @@ components:
       required:
         - status
 
+    RequestCodeBody:
+      type: object
+      properties:
+        phone:
+          type: string
+      required:
+        - phone
+
+    RequestCodeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        devCode:
+          type: string
+      required:
+        - success
+        - message
+
+    VerifyCodeBody:
+      type: object
+      properties:
+        phone:
+          type: string
+        code:
+          type: string
+      required:
+        - phone
+        - code
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        phone:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        activeListingsCount:
+          type: integer
+        soldCount:
+          type: integer
+        purchasedCount:
+          type: integer
+      required:
+        - id
+        - phone
+        - createdAt
+        - activeListingsCount
+        - soldCount
+        - purchasedCount
+
+    Listing:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        userPhone:
+          type: string
+        wasteType:
+          type: string
+        volume:
+          type: string
+        description:
+          type: string
+        photoUrl:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        address:
+          type: string
+        status:
+          type: string
+          enum: [active, reserved, sold]
+        isVip:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        reservedByUserId:
+          type: integer
+      required:
+        - id
+        - userId
+        - wasteType
+        - volume
+        - lat
+        - lng
+        - status
+        - isVip
+        - createdAt
+
+    CreateListingBody:
+      type: object
+      properties:
+        wasteType:
+          type: string
+        volume:
+          type: string
+        description:
+          type: string
+        photoUrl:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        address:
+          type: string
+        isVip:
+          type: boolean
+      required:
+        - wasteType
+        - volume
+        - lat
+        - lng
+
+    PurchaseRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        userPhone:
+          type: string
+        wasteType:
+          type: string
+        volume:
+          type: string
+        description:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        address:
+          type: string
+        status:
+          type: string
+          enum: [open, responded, closed]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - wasteType
+        - volume
+        - lat
+        - lng
+        - status
+        - createdAt
+
+    CreatePurchaseRequestBody:
+      type: object
+      properties:
+        wasteType:
+          type: string
+        volume:
+          type: string
+        description:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        address:
+          type: string
+      required:
+        - wasteType
+        - volume
+        - lat
+        - lng
+
+    StatsSummary:
+      type: object
+      properties:
+        totalListings:
+          type: integer
+        activeListings:
+          type: integer
+        totalRequests:
+          type: integer
+        openRequests:
+          type: integer
+        totalUsers:
+          type: integer
+        topWasteType:
+          type: string
+      required:
+        - totalListings
+        - activeListings
+        - totalRequests
+        - openRequests
+        - totalUsers

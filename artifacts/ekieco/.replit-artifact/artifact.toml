@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "EkiEco — Биржа отходов"
+version = "1.0.0"
+id = "artifacts/ekieco"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19313
+
+[services.development]
+run = "pnpm --filter @workspace/ekieco run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ekieco", "run", "build" ]
+publicDir = "artifacts/ekieco/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19313"
+BASE_PATH = "/"
