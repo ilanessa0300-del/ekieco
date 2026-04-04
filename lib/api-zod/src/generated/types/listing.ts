@@ -11,6 +11,7 @@ export interface Listing {
   id: number;
   userId: number;
   userPhone?: string;
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;

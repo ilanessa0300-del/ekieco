@@ -51,6 +51,7 @@ export interface Listing {
   id: number;
   userId: number;
   userPhone?: string;
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;
@@ -65,6 +66,7 @@ export interface Listing {
 }
 
 export interface CreateListingBody {
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;
@@ -88,6 +90,7 @@ export interface PurchaseRequest {
   id: number;
   userId: number;
   userPhone?: string;
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;
@@ -99,6 +102,7 @@ export interface PurchaseRequest {
 }
 
 export interface CreatePurchaseRequestBody {
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;

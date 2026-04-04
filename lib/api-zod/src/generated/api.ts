@@ -74,6 +74,7 @@ export const GetListingsResponseItem = zod.object({
   id: zod.number(),
   userId: zod.number(),
   userPhone: zod.string().optional(),
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),
@@ -92,6 +93,7 @@ export const GetListingsResponse = zod.array(GetListingsResponseItem);
  * @summary Create a new sale listing
  */
 export const CreateListingBody = zod.object({
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),
@@ -113,6 +115,7 @@ export const GetListingResponse = zod.object({
   id: zod.number(),
   userId: zod.number(),
   userPhone: zod.string().optional(),
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),
@@ -137,6 +140,7 @@ export const ReserveListingResponse = zod.object({
   id: zod.number(),
   userId: zod.number(),
   userPhone: zod.string().optional(),
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),
@@ -161,6 +165,7 @@ export const GetPurchaseRequestsResponseItem = zod.object({
   id: zod.number(),
   userId: zod.number(),
   userPhone: zod.string().optional(),
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),
@@ -178,6 +183,7 @@ export const GetPurchaseRequestsResponse = zod.array(
  * @summary Create a purchase request
  */
 export const CreatePurchaseRequestBody = zod.object({
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),
@@ -197,6 +203,7 @@ export const RespondToPurchaseRequestResponse = zod.object({
   id: zod.number(),
   userId: zod.number(),
   userPhone: zod.string().optional(),
+  title: zod.string().optional(),
   wasteType: zod.string(),
   volume: zod.string(),
   description: zod.string().optional(),

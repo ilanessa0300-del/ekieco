@@ -48,6 +48,7 @@ router.post("/purchase-requests", async (req, res) => {
   const data = parsed.data;
   const [inserted] = await db.insert(purchaseRequestsTable).values({
     userId,
+    title: data.title,
     wasteType: data.wasteType,
     volume: data.volume,
     description: data.description,

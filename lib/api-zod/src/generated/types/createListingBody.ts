@@ -7,6 +7,7 @@
  */
 
 export interface CreateListingBody {
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;

@@ -7,6 +7,7 @@
  */
 
 export interface CreatePurchaseRequestBody {
+  title?: string;
   wasteType: string;
   volume: string;
   description?: string;

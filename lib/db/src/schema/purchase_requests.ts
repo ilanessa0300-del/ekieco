@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 export const purchaseRequestsTable = pgTable("purchase_requests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
+  title: text("title"),
   wasteType: text("waste_type").notNull(),
   volume: text("volume").notNull(),
   description: text("description"),

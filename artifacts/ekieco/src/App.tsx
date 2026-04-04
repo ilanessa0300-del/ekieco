@@ -10,25 +10,19 @@ import Home from "@/pages/home";
 import Auth from "@/pages/auth";
 import Profile from "@/pages/profile";
 import CreateListing from "@/pages/listings/new";
+import ListingsPage from "@/pages/listings/index";
 import CreateRequest from "@/pages/requests/new";
 
 const queryClient = new QueryClient();
 
-// Configure custom fetch interceptor for auth
-import { customFetch } from "@workspace/api-client-react/src/custom-fetch";
 const originalFetch = window.fetch;
 window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   const token = getAuthToken();
-  if (token && init) {
+  if (token) {
+    init = init ?? {};
     init.headers = {
       ...init.headers,
       Authorization: `Bearer ${token}`,
-    };
-  } else if (token && !init) {
-    init = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     };
   }
   return originalFetch(input, init);
@@ -45,7 +39,6 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   }, [token, setLocation]);
 
   if (!token) return null;
-
   return <Component />;
 }
 
@@ -54,14 +47,15 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/auth" component={Auth} />
-      <Route path="/profile">
-        <ProtectedRoute component={Profile} />
-      </Route>
+      <Route path="/listings" component={ListingsPage} />
       <Route path="/listings/new">
         <ProtectedRoute component={CreateListing} />
       </Route>
       <Route path="/requests/new">
         <ProtectedRoute component={CreateRequest} />
+      </Route>
+      <Route path="/profile">
+        <ProtectedRoute component={Profile} />
       </Route>
       <Route component={NotFound} />
     </Switch>

@@ -70,6 +70,7 @@ router.post("/listings", async (req, res) => {
   const data = parsed.data;
   const [inserted] = await db.insert(listingsTable).values({
     userId,
+    title: data.title,
     wasteType: data.wasteType,
     volume: data.volume,
     description: data.description,
